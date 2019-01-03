@@ -1,0 +1,45 @@
+{
+  "version": "3.6.6",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "light2",
+      "line_color": null,
+      "fill_color": null,
+      "points": [
+        [
+          238,
+          280
+        ],
+        [
+          238,
+          320
+        ],
+        [
+          326,
+          319
+        ],
+        [
+          326,
+          279
+        ]
+      ],
+      "shape_type": "polygon"
+    }
+  ],
+  "lineColor": [
+    0,
+    255,
+    0,
+    128
+  ],
+  "fillColor": [
+    255,
+    0,
+    0,
+    128
+  ],
+  "imagePath": "1545360636.4174533.png",
+  "imageHeight": 480,
+  "imageWidth": 640
+}
