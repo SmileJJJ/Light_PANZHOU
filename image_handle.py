@@ -3,7 +3,7 @@ import numpy as np
 import getData
 
 coords = [(238, 280), [238, 220], (326, 319), [326, 379]]
-orginal_image = cv.imread('../../OpenCV/Light_spot_project/usual_status/light_spot/1545360636.4174533.png',cv.IMREAD_GRAYSCALE)
+orginal_image = cv.imread('/usual_status/light_spot/1545360636.4174533.png',cv.IMREAD_GRAYSCALE)
 new_image = orginal_image[280:319,238:326]
 # cv.fillPoly(new_image,coords,255)
 # print(new_image.shape)
