@@ -44,7 +44,7 @@ def test_svm(hog):
     cv2.waitKey()
 
 def test_svm_vidio(hog):
-    cap = cv2.VideoCapture('PANZHOU_VIDEO/v04.mp4')
+    cap = cv2.VideoCapture('PANZHOU_DATA/VIDEO_ALL/v09.mp4')
     while True:
         img = cap.read()[1]
         if img is None:
@@ -61,9 +61,9 @@ def test_svm_vidio(hog):
 
 
 hog = cv2.HOGDescriptor()
-# hog.load('myHogDector.bin')
+hog.load('myHogDector.bin')
 #官方自带的检测器
-hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+# hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 #两种测试方式：1.测试数据集  2.视频测试
 # test_svm(hog)
