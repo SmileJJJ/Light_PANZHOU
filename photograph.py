@@ -18,7 +18,7 @@ vc.set(4,500)
 
 time_start = time.time()
 
-while time.time()-time_start < 5 :
+while time.time()-time_start < 5:
     fram = vc.read()[1]
     cv.imshow('img',fram)
     cv.waitKey(20)

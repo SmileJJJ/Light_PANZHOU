@@ -59,7 +59,6 @@ def test_svm_vidio(hog):
             break
     cv2.destroyAllWindows()
 
-
 hog = cv2.HOGDescriptor()
 hog.load('myHogDector.bin')
 #官方自带的检测器

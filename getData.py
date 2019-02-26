@@ -61,12 +61,13 @@ def get_images_path(path):
 if __name__ == '__main__':
     Loger = myLogger.LogHelper(name='getDate')
     VIDEO_PATH = 'PANZHOU_DATA/VIDEO/'
-    IMAGE_PATH = 'PANZHOU_DATA/IMG/'
+    # IMAGE_PATH = 'PANZHOU_DATA/IMG/'
+    IMAGE_PATH = 'PANZHOU_DATA/EasyDL/'
     JSON_PATH = 'PANZHOU_DATA/JSON'
     SMAILL_IMAGE_PATH = 'PANZHOU_DATA/SMAILL_IMAGE/'
     json_file_01 = 'PANZHOU_DATA/JSON/02.json'
 
-    # get_all_image(VIDEO_PATH,IMAGE_PATH,Loger)
+    get_all_image(VIDEO_PATH,IMAGE_PATH,Loger)
     # coordinates = pars_json(json_file_01)
     # image_path_list = get_images_path(IMAGE_PATH)
     # Loger.writeLog('start to product small image ... ', level="info")

@@ -15,7 +15,7 @@ class LogHelper:
        self.logger = logging.getLogger(name)
        self.formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
        
-       self.file_handler = logging.FileHandler(name+".log")
+       self.file_handler = logging.FileHandler(name+".log", encoding='utf-8')
        self.file_handler.setFormatter(self.formatter)
        
        self.consle_handler = logging.StreamHandler(sys.stdout)
