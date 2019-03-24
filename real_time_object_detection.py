@@ -35,58 +35,83 @@ __mtime__ = 'None'
 └─────┴────┴────┴───────────────────────┴────┴────┴────┴────┘ 
 """
 
-import socket
+from imutils.video import VideoStream
+from imutils.video import FPS
+import numpy as np
+import argparse
+import imutils
 import time
-from myLogger import *
+import cv2
 
 
-class VvvvHandle(object):
+# ap = argparse.ArgumentParser()
+# ap.add_argument('-p', '--prototxt', required=True, help="path to Caffe 'deploy' prototxt file")
+# ap.add_argument('-m', '--model', required=True, help='path to Caffe pre-trained model')
+# ap.add_argument('-c', '--confidence', type=float, default=0.2, help='minimum probability to filter weak detections')
+# args = vars(ap.parse_args())
 
-    def __init__(self, ip, port, c_name, c_logger):
-        self.IP = ip
-        self.PORT = port
-        self.connection_name = c_name
-        self.logger = c_logger
-        self.connection()
+# 设置初始化列表和随机颜色
 
-    def connection(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.client.connect((self.IP, self.PORT))
-            self.logger.writeLog("The connection for VVVV {} is successful".format(self.connection_name), level='info')
-            self.client.send('aaa'.encode('utf-8'))
-        except Exception as e:
-            self.logger.writeLog("The connection for VVVV {} is failure".format(self.connection_name), level='error')
-            self.logger.writeLog("error message:{}".format(str(e)), level='error')
+# label_path = 'F:\\OpenCV\\Light_PANZHOU\\synset_words.txt'
 
-    def send_message(self, message):
-        self.client.send(message.encode())
+# rows = open(label_path).read().strip().split("\n")
+# CLASSES = [r[r.find(" ") + 1:].split(",")[0] for r in rows]
 
-    def close(self):
-        self.client.close()
-        self.logger.writeLog("The connection for VVVV {} is released".format(self.connection_name),level='info')
-        self.logger.removeLog()
+CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+ "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+ "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+ "sofa", "train", "tvmonitor"]
 
 
-if __name__ == '__main__':
+COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
-    IP = '127.0.0.1'
-    PORT = 4444
-    name = 'test'
+CONFIDENCE = 0.2
 
-    logger = LogHelper(name='log/VVVV_COMMUNICATION')
+# 加载模型
+prototxt_path = 'F:\\OpenCV\\Light_PANZHOU\\MobileNetSSD_deploy.prototxt.txt'
+model_path = 'F:\\OpenCV\\Light_PANZHOU\\MobileNetSSD_deploy.caffemodel'
+# net = cv2.dnn.readNetFromCaffe(args['prototxt'], args['model'])
+net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
 
-    vvvv = VvvvHandle(IP, PORT, name, logger)
+# vc = VideoStream(src=0).start()
+vc = cv2.VideoCapture('F:\\OpenCV\\Light_PANZHOU\\PANZHOU_DATA\\VIDEO_ALL\\v01.mp4')
+time.sleep(2.0)
+fps = FPS().start()
 
-    for i in range(5):
-        vvvv.send_message('\x41')
-        time.sleep(2)
+while True:
 
-    for i in range(5):
-        vvvv.send_message('\x4D')
-        time.sleep(2)
-    logger.writeLog("The Program is done", level='info')
-    vvvv.close()
+    frame = vc.read()[1]
+    # frame = np.array(frame, dtype=float)
+    (h, w) = frame.shape[:2]
+    # print(type(frame))
 
+    start_time = time.time()
 
+    blob = cv2.dnn.blobFromImage(frame, 1.0 / 127.5, (300, 300), (127.5, 127.5, 127.5), True)
 
+    net.setInput(blob)
+    detections = net.forward()
+    print(time.time()-start_time)
+ 
+    for i in np.arange(0, detections.shape[1]):
+        confidence = detections[0, 0, i, 2]
+
+        if confidence > CONFIDENCE:
+            idx = int(detections[0, 0, i, 1])
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (startx, starty, endx, endy) = box.astype('int')
+
+            label = '{}:{:.2f}%'.format(CLASSES[idx], confidence*100)
+            cv2.rectangle(frame, (startx, starty), (endx, endy), COLORS[idx], 2)
+            y = starty - 15 if starty - 15 > 15 else starty + 15
+            cv2.putText(frame, label, (startx, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx, 2])
+
+    cv2.imshow('frame', frame)
+    if cv2.waitKey(1) == 27:
+        break
+    fps.update()
+
+fps.stop()
+
+cv2.destroyAllWindows()
+vc.stop()

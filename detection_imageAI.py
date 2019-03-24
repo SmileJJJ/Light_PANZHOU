@@ -35,58 +35,30 @@ __mtime__ = 'None'
 └─────┴────┴────┴───────────────────────┴────┴────┴────┴────┘ 
 """
 
-import socket
+from imageai.Detection import ObjectDetection
+import os
 import time
-from myLogger import *
+#计时
+start = time.time()
 
 
-class VvvvHandle(object):
+execution_path = os.getcwd()
 
-    def __init__(self, ip, port, c_name, c_logger):
-        self.IP = ip
-        self.PORT = port
-        self.connection_name = c_name
-        self.logger = c_logger
-        self.connection()
+detector = ObjectDetection()
+detector.setModelTypeAsRetinaNet()
 
-    def connection(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.client.connect((self.IP, self.PORT))
-            self.logger.writeLog("The connection for VVVV {} is successful".format(self.connection_name), level='info')
-            self.client.send('aaa'.encode('utf-8'))
-        except Exception as e:
-            self.logger.writeLog("The connection for VVVV {} is failure".format(self.connection_name), level='error')
-            self.logger.writeLog("error message:{}".format(str(e)), level='error')
+#载入已训练好的文件
+detector.setModelPath(os.path.join(execution_path, "resnet50_coco_best_v2.0.1.h5"))
+detector.loadModel()
 
-    def send_message(self, message):
-        self.client.send(message.encode())
+#将检测后的结果保存为新图片
+detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , "image3.jpg"), output_image_path=os.path.join(execution_path , "image3new.jpg"))
 
-    def close(self):
-        self.client.close()
-        self.logger.writeLog("The connection for VVVV {} is released".format(self.connection_name),level='info')
-        self.logger.removeLog()
+#结束计时
+end = time.time()
 
+for eachObject in detections:
+    print(eachObject["name"] + " : " + eachObject["percentage_probability"] )
+    print("--------------------------------")
 
-if __name__ == '__main__':
-
-    IP = '127.0.0.1'
-    PORT = 4444
-    name = 'test'
-
-    logger = LogHelper(name='log/VVVV_COMMUNICATION')
-
-    vvvv = VvvvHandle(IP, PORT, name, logger)
-
-    for i in range(5):
-        vvvv.send_message('\x41')
-        time.sleep(2)
-
-    for i in range(5):
-        vvvv.send_message('\x4D')
-        time.sleep(2)
-    logger.writeLog("The Program is done", level='info')
-    vvvv.close()
-
-
-
+print ("\ncost time:",end-start)
